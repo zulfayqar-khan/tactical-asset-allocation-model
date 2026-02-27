@@ -118,7 +118,6 @@ python training/phase7_diagnostics.py
 
 ## Limitations
 
-- Universe uses late-2024 DJIA composition, so survivorship bias exists
 - Data source depends on Yahoo Finance availability
 - Results can vary slightly by platform and BLAS backend
 
