@@ -1,0 +1,23 @@
+{
+  "model_type": "tcn",
+  "best_trial": 3,
+  "best_val_sharpe_raw": 1.04767644405365,
+  "best_val_sharpe_annualized": 3.629257661988028,
+  "forward_days": 21,
+  "ew_val_sharpe_annualized": 2.5420110258623225,
+  "hyperparameters": {
+    "learning_rate": 0.019191484075133707,
+    "lookback_window": 21,
+    "tcn_hidden_channels": 64,
+    "dropout": 0.2,
+    "lambda_turnover": 0.05,
+    "lambda_concentration": 0.01,
+    "lambda_entropy": 0.0,
+    "softmax_temperature": 0.5,
+    "batch_size": 32,
+    "loss_type": "return_max",
+    "gamma_risk_aversion": 5.0,
+    "alpha_return_pred": 1.0,
+    "alpha_vol_pred": 0.5
+  }
+}

@@ -1,0 +1,253 @@
+# ============================================================================
+# config.yaml — Tactical Asset Allocation System
+# Master configuration file. All hyperparameters, paths, seeds, and thresholds.
+# No magic numbers in code — everything is controlled from here.
+# ============================================================================
+
+# --- Project Metadata -------------------------------------------------------
+project:
+  name: "Deep Learning Tactical Asset Allocation"
+  author: "Zulfiqar Khan"
+  module: "UFCEKP-30-3"
+  university: "UWE Bristol"
+
+# --- Random Seeds (Reproducibility) ----------------------------------------
+seeds:
+  python: 42
+  numpy: 42
+  torch: 42
+
+# --- File Paths -------------------------------------------------------------
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  results: "results"
+  figures: "results/figures"
+  tables: "results/tables"
+  checkpoints: "results/checkpoints"
+
+# --- Data Configuration -----------------------------------------------------
+data:
+  start_date: "2008-01-01"
+  end_date: "2024-12-31"
+  source: "yfinance"
+  # DJIA constituents as of late 2024.
+  # NOTE: WBA (Walgreens) was removed from DJIA and delisted — replaced with AMZN.
+  # Survivorship bias caveat: we use the composition as of end-2024, not historical.
+  # This is a known survivorship bias limitation — documented in project_design.md.
+  tickers:
+    - AAPL
+    - AMGN
+    - AMZN
+    - AXP
+    - BA
+    - CAT
+    - CRM
+    - CSCO
+    - CVX
+    - DIS
+    - NVDA
+    - GS
+    - HD
+    - HON
+    - IBM
+    - INTC
+    - JNJ
+    - JPM
+    - KO
+    - MCD
+    - MMM
+    - MRK
+    - MSFT
+    - NKE
+    - PG
+    - TRV
+    - UNH
+    - V
+    - VZ
+    - WMT
+  # Market/regime data tickers
+  market_tickers:
+    spy: "SPY"
+    vix: "^VIX"
+    tnx: "^TNX"     # 10-year Treasury yield
+    irx: "^IRX"     # 3-month Treasury yield
+  # Data cleaning
+  max_gap_fill: 5            # Max consecutive NaN days to forward-fill
+  outlier_return_threshold: 0.20  # Flag daily returns exceeding ±20%
+  correlation_redundancy_threshold: 0.98  # Flag asset pairs above this
+
+# --- Walk-Forward Split Dates -----------------------------------------------
+splits:
+  initial_train:
+    start: "2008-01-01"
+    end: "2015-12-31"
+  validation:
+    start: "2016-01-01"
+    end: "2017-12-31"
+  test_fold_1:
+    start: "2018-01-01"
+    end: "2019-12-31"
+  test_fold_2:
+    start: "2020-01-01"
+    end: "2021-12-31"
+  test_fold_3:
+    start: "2022-01-01"
+    end: "2024-12-31"
+  embargo_days: 21  # Trading days gap between train end and test start
+
+# --- Feature Engineering ----------------------------------------------------
+features:
+  lookback_window: 63        # Trading days (~3 months), tunable
+  normalization_window: 252  # Rolling z-score lookback (1 year)
+  clip_range: 3.0            # Clip normalized features to [-clip, +clip]
+
+  # Group A — Price-Based (per asset)
+  returns_windows: [1, 5, 21]          # Log return periods
+  sma_windows: [20, 50, 200]           # Simple moving average windows
+  bollinger_window: 20                  # Bollinger Band window
+  bollinger_std: 2.0                    # Bollinger Band std multiplier
+  rsi_window: 14                        # RSI lookback
+  macd_fast: 12                         # MACD fast EMA
+  macd_slow: 26                         # MACD slow EMA
+  macd_signal: 9                        # MACD signal line
+
+  # Group B — Volatility (per asset)
+  vol_short_window: 21                  # Short-term realized volatility
+  vol_long_window: 63                   # Long-term realized volatility
+
+  # Group C — Cross-Sectional
+  cross_section_window: 21              # Window for cross-sectional rank/z-score
+  correlation_window: 63                # Rolling pairwise correlation window
+  pca_components: 5                     # Number of PCA components from correlation
+
+  # Group D — Market Regime (shared)
+  market_breadth_window: 21             # Window for market breadth calculation
+  drawdown_window: 252                  # Rolling peak window for S&P 500 drawdown
+
+# --- Model Architecture ----------------------------------------------------
+model:
+  tcn:
+    num_layers: 4
+    kernel_size: 3
+    hidden_channels: 32       # Start at 32 for CPU (keeps params under 500K)
+    dilation_factors: [1, 2, 4, 8]
+    dropout: 0.2
+    activation: "gelu"
+  attention:
+    num_heads: 1              # Single-head self-attention
+  portfolio_head:
+    hidden_units: 128
+    dropout: 0.3
+  softmax_temperature: 0.5    # Initial gain=2.0 (best from HP search Trial 9)
+  max_weight: 0.30            # Maximum single-asset weight (30%)
+
+  lstm:
+    num_layers: 2
+    hidden_size: 64           # Reduced from 128 to stay under 500K params
+    dropout: 0.2
+    head_hidden: 64           # Reduced from 128 to match
+    head_dropout: 0.3
+
+# --- Training Configuration ------------------------------------------------
+training:
+  batch_size: 32              # Best from HP search Trial 9
+  max_epochs: 200
+  early_stopping_patience: 20 # Stop if no val Sharpe improvement for 20 epochs
+  learning_rate: 0.00524      # Best from HP search Trial 9
+  weight_decay: 0.0001        # L2 regularization
+  grad_clip_max_norm: 1.0     # Gradient clipping
+  forward_days: 21             # Multi-day cumulative returns (boosts gradient SNR)
+  optimizer: "adam"
+  scheduler:
+    type: "cosine"
+    T_max: 200
+    eta_min: 0.00001
+
+# --- Loss Function ----------------------------------------------------------
+loss:
+  type: "return_max"          # Best from HP search (DRL-inspired return maximization)
+  sharpe_window: 21           # Days to compute Sharpe over in loss
+  epsilon: 1.0e-8             # Denominator stabilizer for Sharpe
+  gamma_risk_aversion: 1.0    # Risk aversion for mv_utility loss
+  lambda_turnover: 0.01       # Low turnover penalty (best from Trial 9)
+  lambda_concentration: 0.01  # Low concentration penalty (best from Trial 9)
+  lambda_entropy: 0.0         # Entropy reg counterproductive (Phase 6 finding)
+  alpha_return_pred: 0.1      # Light multi-task (best from Trial 9)
+  alpha_vol_pred: 0.1         # Light multi-task (best from Trial 9)
+
+# --- Transaction Costs & Portfolio Constraints ------------------------------
+portfolio:
+  transaction_cost_bps: 10    # 10 basis points per unit turnover
+  min_rebalance_threshold: 0.05  # Only rebalance if total turnover > 5%
+  max_single_weight: 0.30     # Maximum single-asset weight
+  long_only: true             # No short positions
+  fully_invested: true        # Weights sum to 1.0
+
+# --- Hyperparameter Search --------------------------------------------------
+hyperparameter_search:
+  max_configurations: 15      # CPU budget — 15 configs keeps runtime manageable
+  method: "random"            # random search (or optuna)
+  search_space:
+    learning_rate:
+      low: 0.0001
+      high: 0.02                # Raised: sigmoid+normalize handles higher LR
+      log: true
+    lookback_window: [21, 42, 63]
+    tcn_hidden_channels: [32, 64]          # 128 exceeds 500K param budget
+    dropout: [0.1, 0.2, 0.3]
+    lambda_turnover: [0.01, 0.05, 0.1, 0.2]
+    lambda_concentration: [0.01, 0.05, 0.1]
+    lambda_entropy: [0.0]                  # Entropy reg is counterproductive
+    softmax_temperature: [0.5, 1.0, 1.5]   # Now learnable; lower init values
+    loss_type: ["sharpe", "mv_utility", "return_max"]  # Search over loss functions
+    gamma_risk_aversion: [1.0, 2.0, 5.0]   # For mv_utility loss
+    alpha_return_pred: [0.1, 0.5, 1.0]     # Multi-task return prediction weight
+    alpha_vol_pred: [0.1, 0.5]             # Multi-task vol prediction weight
+    batch_size: [32, 64]
+
+# --- Evaluation Thresholds (Go/No-Go from Section 4.4) ---------------------
+evaluation:
+  min_sharpe_absolute: 0.5
+  min_sharpe_above_equal_weight: 0.15
+  max_drawdown: 0.35          # 35%
+  max_monthly_turnover: 0.60  # 60%
+  min_positive_folds: 2       # Sharpe > 0 in at least 2 of 3 test folds
+  max_seed_sharpe_std: 0.3    # Seed sensitivity threshold
+  num_seed_runs: 5            # Number of seeds for stability check
+  weight_entropy_min_ratio: 0.5  # Min entropy as fraction of ln(N)
+  weight_cosine_sim_max: 0.95    # Max cosine similarity to 1/N (collapse)
+  training_sharpe_overfit: 4.0   # Training Sharpe above this = overfit
+  max_drawdown_reject: 0.45      # Reject model if DD exceeds this
+
+# --- Stress Test Periods ----------------------------------------------------
+stress_tests:
+  covid_crash:
+    start: "2020-02-01"
+    end: "2020-04-30"
+  rate_shock_2022:
+    start: "2022-01-01"
+    end: "2022-10-31"
+  q4_2018_selloff:
+    start: "2018-10-01"
+    end: "2018-12-31"
+
+# --- Baseline Strategy Parameters -------------------------------------------
+baselines:
+  rebalance_frequency: "monthly"
+  mean_variance:
+    lookback_days: 252
+  momentum:
+    lookback_months: 12
+    skip_months: 1            # Skip most recent month
+    top_quartile_multiplier: 2.0
+    bottom_quartile_multiplier: 0.5
+  risk_parity:
+    vol_lookback: 63
+
+# --- Logging ----------------------------------------------------------------
+logging:
+  level: "INFO"
+  log_every_n_epochs: 1
+  save_weight_history: true
+  save_attention_maps: true

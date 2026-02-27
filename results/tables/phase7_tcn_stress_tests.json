@@ -1,0 +1,86 @@
+{
+  "covid_crash": {
+    "dl_metrics": {
+      "Ann. Return": 0.3462667298692901,
+      "Ann. Volatility": 0.6564763554464277,
+      "Sharpe Ratio": 0.5274626069872939,
+      "Max Drawdown": 0.30021177272902394,
+      "Calmar Ratio": 1.153408231534731,
+      "Sortino Ratio": 0.7006321662230374,
+      "Hit Rate": 0.3333333333333333,
+      "Profit Factor": 2.209292791859233,
+      "95% CVaR": 0.0
+    },
+    "ew_metrics": {
+      "Ann. Return": -0.12021505527681975,
+      "Ann. Volatility": 0.632222923228938,
+      "Sharpe Ratio": -0.19014662528028575,
+      "Max Drawdown": 0.3255761726476558,
+      "Calmar Ratio": -0.36923787849462364,
+      "Sortino Ratio": -0.27157852684870376,
+      "Hit Rate": 0.3333333333333333,
+      "Profit Factor": 0.7811834926769845,
+      "95% CVaR": 0.0,
+      "Avg Monthly Turnover": 0.14183283227581103
+    },
+    "start": "2020-02-01",
+    "end": "2020-04-30",
+    "n_days": 62
+  },
+  "rate_shock_2022": {
+    "dl_metrics": {
+      "Ann. Return": -0.3150820635458593,
+      "Ann. Volatility": 0.4101083906561264,
+      "Sharpe Ratio": -0.7682897271176631,
+      "Max Drawdown": 0.4304525806165132,
+      "Calmar Ratio": -0.7319785679867103,
+      "Sortino Ratio": -1.2814833796042582,
+      "Hit Rate": 0.3,
+      "Profit Factor": 0.5719231378893451,
+      "95% CVaR": -0.20493935691892115
+    },
+    "ew_metrics": {
+      "Ann. Return": -0.11678589912735737,
+      "Ann. Volatility": 0.215448790892242,
+      "Sharpe Ratio": -0.5420587353668118,
+      "Max Drawdown": 0.22827715966449857,
+      "Calmar Ratio": -0.511596952139228,
+      "Sortino Ratio": -0.8155389253222101,
+      "Hit Rate": 0.4,
+      "Profit Factor": 0.6932944311660709,
+      "95% CVaR": -0.10157198721578076,
+      "Avg Monthly Turnover": 0.053059579566274696
+    },
+    "start": "2022-01-01",
+    "end": "2022-10-31",
+    "n_days": 209
+  },
+  "q4_2018_selloff": {
+    "dl_metrics": {
+      "Ann. Return": -0.6362555950829134,
+      "Ann. Volatility": 0.3598423302084948,
+      "Sharpe Ratio": -1.7681510530299842,
+      "Max Drawdown": 0.2970244750720672,
+      "Calmar Ratio": -2.1420982056395803,
+      "Sortino Ratio": -2.727251037487263,
+      "Hit Rate": 0.0,
+      "Profit Factor": 0.0,
+      "95% CVaR": 0.0
+    },
+    "ew_metrics": {
+      "Ann. Return": -0.34964607518258484,
+      "Ann. Volatility": 0.24981409856832834,
+      "Sharpe Ratio": -1.3996250699475665,
+      "Max Drawdown": 0.17710895494647663,
+      "Calmar Ratio": -1.9741863153574022,
+      "Sortino Ratio": -2.19496104313543,
+      "Hit Rate": 0.3333333333333333,
+      "Profit Factor": 0.21078659172054798,
+      "95% CVaR": 0.0,
+      "Avg Monthly Turnover": 0.03565930330474119
+    },
+    "start": "2018-10-01",
+    "end": "2018-12-31",
+    "n_days": 63
+  }
+}

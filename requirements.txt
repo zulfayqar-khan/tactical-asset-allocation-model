@@ -1,0 +1,25 @@
+# requirements.txt — Tactical Asset Allocation System
+# Exact versions from the development environment (pip freeze).
+# Python 3.11 required.
+#
+# WINDOWS (CPU-only PyTorch — install torch first, separately):
+#   pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements.txt
+#
+# MAC / LINUX:
+#   pip install -r requirements.txt
+#   (torch pulls the appropriate variant from PyPI automatically)
+
+torch==2.5.1
+pandas==3.0.0
+numpy==2.4.2
+yfinance==1.1.0
+matplotlib==3.10.8
+seaborn==0.13.2
+scipy==1.17.0
+scikit-learn==1.8.0
+PyYAML==6.0.3
+pyarrow==23.0.0
+
+# Optional — only needed if hyperparameter_search.method is switched to "optuna"
+optuna==4.7.0

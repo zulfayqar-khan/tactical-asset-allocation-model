@@ -1,0 +1,23 @@
+{
+  "model_type": "lstm",
+  "best_trial": 8,
+  "best_val_sharpe_raw": 1.0553902387619019,
+  "best_val_sharpe_annualized": 3.6559790306957245,
+  "forward_days": 21,
+  "ew_val_sharpe_annualized": 2.5420110258623225,
+  "hyperparameters": {
+    "learning_rate": 0.011455777613940602,
+    "lookback_window": 42,
+    "tcn_hidden_channels": 32,
+    "dropout": 0.3,
+    "lambda_turnover": 0.2,
+    "lambda_concentration": 0.05,
+    "lambda_entropy": 0.0,
+    "softmax_temperature": 1.5,
+    "batch_size": 64,
+    "loss_type": "sharpe",
+    "gamma_risk_aversion": 2.0,
+    "alpha_return_pred": 0.1,
+    "alpha_vol_pred": 0.5
+  }
+}

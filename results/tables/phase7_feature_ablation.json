@@ -1,0 +1,25 @@
+{
+  "baseline_sharpe": 0.8955023884773254,
+  "groups": {
+    "A (Price-Based)": {
+      "val_sharpe": 1.0563257932662964,
+      "delta": 0.16082340478897095,
+      "best_epoch": 13
+    },
+    "B (Volatility)": {
+      "val_sharpe": 0.8536902070045471,
+      "delta": -0.04181218147277832,
+      "best_epoch": 1
+    },
+    "C (Cross-Sect.)": {
+      "val_sharpe": 0.9453539252281189,
+      "delta": 0.04985153675079346,
+      "best_epoch": 13
+    },
+    "D (Market Regime)": {
+      "val_sharpe": 1.1316511631011963,
+      "delta": 0.23614877462387085,
+      "best_epoch": 24
+    }
+  }
+}
